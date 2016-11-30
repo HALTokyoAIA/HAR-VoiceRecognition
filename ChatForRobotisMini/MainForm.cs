@@ -46,7 +46,6 @@ namespace voice_recognition.cs
 		string LineTest;
 
 		int ClientCommandNo = 0;
-		int SEND_CLIENT_INTERVAL = 500;
 
 		private PXCMSession session;
 		private Dictionary<ToolStripMenuItem, Int32> modules = new Dictionary<ToolStripMenuItem, int>();
@@ -54,7 +53,7 @@ namespace voice_recognition.cs
 
 		public string g_file; //SM: ToDo function for return the file
 		public string v_file; //SM: ToDo function for return the file
-		string[] OrderWords = { "立ちなさい", "座りなさい", "飛びなさい", "歩きなさい" };
+		string[] OrderWords = { "走れ", "こんにちは", "伸びろ", "ぐるぐる", "グルグル", "のびろ" };
 
 		public MainForm(PXCMSession session)
 		{
@@ -253,7 +252,7 @@ namespace voice_recognition.cs
 		private void commandControlToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Status2.Nodes.Clear();
-//			ConsoleMode.Text = "Command Control:";
+			//			ConsoleMode.Text = "Command Control:";
 			commandControlToolStripMenuItem.Checked = true;
 			dictationToolStripMenuItem.Checked = false;
 			Console2.Nodes.Clear();
@@ -266,7 +265,7 @@ namespace voice_recognition.cs
 		private void dictationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Status2.Nodes.Clear();
-//			ConsoleMode.Text = "Dictation:";
+			//			ConsoleMode.Text = "Dictation:";
 			commandControlToolStripMenuItem.Checked = false;
 			dictationToolStripMenuItem.Checked = true;
 			Console2.LabelEdit = false;
@@ -277,7 +276,7 @@ namespace voice_recognition.cs
 
 		private void Start_Click(object sender, EventArgs e)
 		{
-//			Start.Enabled = false;
+			//			Start.Enabled = false;
 			Stop.Enabled = true;
 			MainMenu.Enabled = false;
 
@@ -286,7 +285,7 @@ namespace voice_recognition.cs
 			thread.Start();
 			PutLabel1Text("初期化中...");
 
-//			System.Threading.Thread.Sleep(5);
+			//			System.Threading.Thread.Sleep(5);
 		}
 
 		private delegate void VoiceRecognitionCompleted();
@@ -308,7 +307,6 @@ namespace voice_recognition.cs
 
 		private void Stop_Click(object sender, EventArgs e)
 		{
-			timer1.Stop();
 			stop = true;
 			this.Close();
 		}
@@ -360,11 +358,11 @@ namespace voice_recognition.cs
 		{
 			///////////////////////////////////////////
 			LineTest = line;
-//			Invoke(new PrintMessage(PrintRecognized));
-			
-			Console2.Invoke(new TreeViewUpdateDelegate(delegate(string line1) { Console2.Nodes.Add(line1).EnsureVisible(); }), new object[] { line });
+			//			Invoke(new PrintMessage(PrintRecognized));
 
-			if(checkBox1.Checked)
+			Console2.Invoke(new TreeViewUpdateDelegate(delegate (string line1) { Console2.Nodes.Add(line1).EnsureVisible(); }), new object[] { line });
+
+			if (checkBox1.Checked)
 			{
 				PerformClickButton1();
 			}
@@ -378,7 +376,7 @@ namespace voice_recognition.cs
 
 		public void PrintStatus(string line)
 		{
-			Status2.Invoke(new TreeViewUpdateDelegate(delegate(string line1) { Status2.Nodes.Add(line1).EnsureVisible(); }), new object[] { line });
+			Status2.Invoke(new TreeViewUpdateDelegate(delegate (string line1) { Status2.Nodes.Add(line1).EnsureVisible(); }), new object[] { line });
 		}
 
 		private delegate void ConsoleReplaceTextDelegate(TreeNode tn1, string text);
@@ -389,7 +387,7 @@ namespace voice_recognition.cs
 			{
 				string s = TrimScore(n.Text);
 				if (s.Length > 0)
-					Console2.Invoke(new ConsoleReplaceTextDelegate(delegate(TreeNode tn1, string text) { tn1.Text = text; }), new object[] { n, s });
+					Console2.Invoke(new ConsoleReplaceTextDelegate(delegate (TreeNode tn1, string text) { tn1.Text = text; }), new object[] { n, s });
 			}
 		}
 
@@ -400,7 +398,7 @@ namespace voice_recognition.cs
 				string s = TrimScore(Console2.Nodes[i].Text);
 				if (s.Length == 0) continue;
 				if ((label--) != 0) continue;
-				Console2.Invoke(new ConsoleReplaceTextDelegate(delegate(TreeNode tn1, string text) { tn1.Text = text; }), new object[] { Console2.Nodes[i], Console2.Nodes[i].Text + " [" + confidence + "%]" });
+				Console2.Invoke(new ConsoleReplaceTextDelegate(delegate (TreeNode tn1, string text) { tn1.Text = text; }), new object[] { Console2.Nodes[i], Console2.Nodes[i].Text + " [" + confidence + "%]" });
 				break;
 			}
 		}
@@ -568,11 +566,14 @@ namespace voice_recognition.cs
 		{
 			textBox1.Text = LineTest;
 			AnalyseWords(textBox1.Text);
+			timer1.Enabled = true;
 		}
 
 
 		private void AnalyseWords(string Order)
 		{
+			string Cmd;
+			string Mes;
 
 			if (Order == OrderWords[0])
 			{
@@ -590,9 +591,77 @@ namespace voice_recognition.cs
 			{
 				ClientCommandNo = 4;
 			}
+			else if (Order == OrderWords[4])
+			{
+				ClientCommandNo = 4;
+			}
+			else if (Order == OrderWords[5])
+			{
+				ClientCommandNo = 3;
+			}
 			else
 			{
 				ClientCommandNo = 0;
+			}
+
+
+			if (ClientCommandNo == 0)
+			{
+				Cmd = "0000";
+				Mes = null;
+			}
+			else if (ClientCommandNo == 1)
+			{
+				Cmd = "0001";
+				Mes = "うつよっ  ばーーん";
+			}
+			else if (ClientCommandNo == 2)
+			{
+				Cmd = "0002";
+				Mes = "やっほーー";
+			}
+			else if (ClientCommandNo == 3)
+			{
+				Cmd = "0003";
+				Mes = "えっ   なんだろー";
+			}
+			else if (ClientCommandNo == 4)
+			{
+				Cmd = "0004";
+				Mes = "ぐるぐる";
+			}
+			else
+			{
+				Cmd = "0000";
+				Mes = null;
+			}
+
+			ClientSendMsg = Cmd + ";" + Mes;
+
+			///////////////////////////////////////////////
+			//			if (ClientCommandNo != PreviousClientCommandNo && resMsg != "busy")
+			if (resMsg != "busy")
+			{
+				label3.Text = Cmd;
+				toClientSend();
+				//pictureBox1.BackColor = Color.White;
+			}
+			else
+			{
+				label3.Text = Cmd;
+				//	pictureBox1.BackColor = Color.MistyRose;
+			}
+		}
+
+		private void timer_tick(object sender, EventArgs e)
+		{
+			if (resMsg != "busy")
+			{
+				pictureBox1.BackColor = Color.White;
+			}
+			else
+			{
+				pictureBox1.BackColor = Color.MistyRose;
 			}
 		}
 
@@ -663,18 +732,7 @@ namespace voice_recognition.cs
 			Thread thread = new System.Threading.Thread(DoVoiceRecognition);
 			thread.Start();
 			PutLabel1Text("初期化中...");
-
-			// Thread内で System.Windows.Forms.Timer を起動する場合は Invoke を使う
-			Invoke(new StartTimer1_Delegate(StartTimer1));
 		}
-
-		delegate void StartTimer1_Delegate();
-		private void StartTimer1()
-		{
-			timer1.Interval = SEND_CLIENT_INTERVAL;
-			timer1.Start();
-		}
-
 
 		delegate void MyText();
 		private void DispIPInfo()
@@ -745,58 +803,5 @@ namespace voice_recognition.cs
 			}
 		}
 
-		private void timer1_Tick(object sender, EventArgs e)
-		{
-			string Cmd;
-			string Mes;
-
-			if (ClientCommandNo == 0)
-			{
-				Cmd = "0000";
-				Mes = null;
-			}
-			else if (ClientCommandNo == 1)
-			{
-				Cmd = "0001";
-				Mes = "うつよっ  ばーーん";
-			}
-			else if (ClientCommandNo == 2)
-			{
-				Cmd = "0002";
-				Mes = "やっほーー";
-			}
-			else if (ClientCommandNo == 3)
-			{
-				Cmd = "0003";
-				Mes = "えっ   なんだろー";
-			}
-			else if (ClientCommandNo == 4)
-			{
-				Cmd = "0004";
-				Mes = "ぐるぐる";
-			}
-			else
-			{
-				Cmd = "0000";
-				Mes = null;
-			}
-
-			ClientSendMsg = Cmd + ";" + Mes;
-
-			///////////////////////////////////////////////
-			//			if (ClientCommandNo != PreviousClientCommandNo && resMsg != "busy")
-			if (resMsg != "busy")
-			{
-				label3.Text = Cmd;
-				toClientSend();
-				pictureBox1.BackColor = Color.White;
-			}
-			else
-			{
-				label3.Text = Cmd;
-				pictureBox1.BackColor = Color.MistyRose;
-			}
-
-		}
 	}
 }
